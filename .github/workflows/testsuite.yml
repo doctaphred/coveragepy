@@ -36,8 +36,8 @@ jobs:
     strategy:
       matrix:
         os:
-          # - ubuntu
-          # - macos
+          - ubuntu
+          - macos
           - windows
         python-version:
           # When changing this list, be sure to check the [gh] list in
