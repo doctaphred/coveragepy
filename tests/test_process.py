@@ -794,6 +794,19 @@ class EnvironmentTest(CoverageTest):
         actual = self.run_command("coverage run run_me.py")
         self.assert_tryexecfile_output(expected, actual)
 
+    def test_full_sys_path(self) -> None:
+        """WIP: compare full path and argv, for Windows bug diagnosis."""
+        self.make_file("run_me.py", """\
+import sys
+print('sys.path:', '\\n'.join(map(repr, sys.path)))
+print()
+print('sys.argv:', '\\n'.join(map(repr, sys.argv)))
+""")
+        self.set_environ("PYTHONSAFEPATH", "1")
+        expected = self.run_command("python run_me.py")
+        actual = self.run_command("coverage run run_me.py")
+        self.assert_tryexecfile_output(expected, actual)
+
     @pytest.mark.skipif(env.PYVERSION < (3, 11), reason="PYTHONSAFEPATH is new in 3.11")
     def test_pythonsafepath_dashm(self) -> None:
         with open(TRY_EXECFILE) as f:
