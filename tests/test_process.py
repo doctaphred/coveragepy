@@ -809,7 +809,19 @@ print('sys.argv:', '\\n'.join(map(repr, sys.argv)))
         self.assert_tryexecfile_output(expected, actual)
 
     def test_full_sys_path_dump(self) -> None:
-        """WIP: compare full path and argv, for Windows bug diagnosis."""
+        """WIP: dump full path and argv, for Windows bug diagnosis."""
+        self.make_file("run_me.py", """\
+import sys
+print('"DATA": "xyzzy"')
+print('sys.path:', '\\n'.join(map(repr, sys.path)))
+print()
+print('sys.argv:', '\\n'.join(map(repr, sys.argv)))
+""")
+        actual = self.run_command("coverage run run_me.py")
+        self.assert_tryexecfile_output("", actual)
+
+    def test_full_sys_path_dump_safepath(self) -> None:
+        """WIP: dump full path and argv, for Windows bug diagnosis."""
         self.make_file("run_me.py", """\
 import sys
 print('"DATA": "xyzzy"')
@@ -818,10 +830,8 @@ print()
 print('sys.argv:', '\\n'.join(map(repr, sys.argv)))
 """)
         self.set_environ("PYTHONSAFEPATH", "1")
-        # expected = self.run_command("python run_me.py")
         actual = self.run_command("coverage run run_me.py")
         self.assert_tryexecfile_output("", actual)
-
 
     @pytest.mark.skipif(env.PYVERSION < (3, 11), reason="PYTHONSAFEPATH is new in 3.11")
     def test_pythonsafepath_dashm(self) -> None:
