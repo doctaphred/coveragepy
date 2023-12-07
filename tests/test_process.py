@@ -798,6 +798,7 @@ class EnvironmentTest(CoverageTest):
         """WIP: compare full path and argv, for Windows bug diagnosis."""
         self.make_file("run_me.py", """\
 import sys
+print('"DATA": "xyzzy"')
 print('sys.path:', '\\n'.join(map(repr, sys.path)))
 print()
 print('sys.argv:', '\\n'.join(map(repr, sys.argv)))
