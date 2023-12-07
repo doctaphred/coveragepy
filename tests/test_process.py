@@ -794,44 +794,41 @@ class EnvironmentTest(CoverageTest):
         actual = self.run_command("coverage run run_me.py")
         self.assert_tryexecfile_output(expected, actual)
 
-    def test_full_sys_path_diff(self) -> None:
-        """WIP: compare full path and argv, for Windows bug diagnosis."""
-        self.make_file("run_me.py", """\
-import sys
-print('"DATA": "xyzzy"')
-print('sys.path:', '\\n'.join(map(repr, sys.path)))
-print()
-print('sys.argv:', '\\n'.join(map(repr, sys.argv)))
-""")
-        self.set_environ("PYTHONSAFEPATH", "1")
-        expected = self.run_command("python run_me.py")
-        actual = self.run_command("coverage run run_me.py")
-        self.assert_tryexecfile_output(expected, actual)
+########################################################################
 
-    def test_full_sys_path_dump(self) -> None:
-        """WIP: dump full path and argv, for Windows bug diagnosis."""
-        self.make_file("run_me.py", """\
+    DATA_DUMP_SCRIPT = """\
 import sys
-print('"DATA": "xyzzy"')
-print('sys.path:', '\\n'.join(map(repr, sys.path)))
-print()
-print('sys.argv:', '\\n'.join(map(repr, sys.argv)))
-""")
-        actual = self.run_command("coverage run run_me.py")
-        self.assert_tryexecfile_output("", actual)
+print(sys.version)
+print(sys.version_info)
+print('sys.argv:', sys.argv)
+print('sys.path:')
+for p in sys.path:
+    print('  -', p)
+"""
 
-    def test_full_sys_path_dump_safepath(self) -> None:
-        """WIP: dump full path and argv, for Windows bug diagnosis."""
-        self.make_file("run_me.py", """\
-import sys
-print('"DATA": "xyzzy"')
-print('sys.path:', '\\n'.join(map(repr, sys.path)))
-print()
-print('sys.argv:', '\\n'.join(map(repr, sys.argv)))
-""")
+    def test_sys_path_dump_python(self) -> None:
+        self.make_file("run_me.py", self.DATA_DUMP_SCRIPT)
+        dump = self.run_command("python run_me.py")
+        assert dump == ""  # XXX: Print the data dump in the build output.
+
+    def test_sys_path_dump_python_safepath(self) -> None:
+        self.make_file("run_me.py", self.DATA_DUMP_SCRIPT)
         self.set_environ("PYTHONSAFEPATH", "1")
-        actual = self.run_command("coverage run run_me.py")
-        self.assert_tryexecfile_output("", actual)
+        dump = self.run_command("python run_me.py")
+        assert dump == ""  # XXX: Print the data dump in the build output.
+
+    def test_sys_path_dump_coverage(self) -> None:
+        self.make_file("run_me.py", self.DATA_DUMP_SCRIPT)
+        dump = self.run_command("coverage run run_me.py")
+        assert dump == ""  # XXX: Print the data dump in the build output.
+
+    def test_sys_path_dump_coverage_safepath(self) -> None:
+        self.make_file("run_me.py", self.DATA_DUMP_SCRIPT)
+        self.set_environ("PYTHONSAFEPATH", "1")
+        dump = self.run_command("coverage run run_me.py")
+        assert dump == ""  # XXX: Print the data dump in the build output.
+
+########################################################################
 
     @pytest.mark.skipif(env.PYVERSION < (3, 11), reason="PYTHONSAFEPATH is new in 3.11")
     def test_pythonsafepath_dashm(self) -> None:
