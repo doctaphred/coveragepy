@@ -797,10 +797,21 @@ class EnvironmentTest(CoverageTest):
 ########################################################################
 
     DATA_DUMP_SCRIPT = """\
-import sys
-print(sys.version)
-print(sys.version_info)
-print('sys.argv:', sys.argv)
+import os, sys
+
+print(f'{sys.version=}')
+print(f'{sys.version_info=}')
+print()
+print(f'{sys.argv=}')
+print(f'{os.getcwd()=}')
+print(f'{os.path.abspath(os.path.dirname(sys.argv[0]))=}')
+print()
+print(f'{os.environ.get("PYTHONSAFEPATH")=}')
+try:
+    print(f'{sys.flags.safe_path=}')
+except AttributeError:
+    print('sys.flags does not have safe_path')
+print()
 print('sys.path:')
 for p in sys.path:
     print('  -', p)
