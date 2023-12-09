@@ -822,7 +822,7 @@ data = {
     },
 
     'os': {
-        os.environ[name] for name in os.environ if name.startswith('PYTHON')
+        name: os.environ[name] for name in os.environ if name.startswith('PYTHON')
     },
 
     'argv0': sys.argv[0],
