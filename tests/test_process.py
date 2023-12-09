@@ -797,24 +797,52 @@ class EnvironmentTest(CoverageTest):
 ########################################################################
 
     DATA_DUMP_SCRIPT = """\
-import os, sys
+# Print some info about the interpreter state.
 
-print(f'{sys.version=}')
-print(f'{sys.version_info=}')
-print()
-print(f'{sys.argv=}')
-print(f'{os.getcwd()=}')
-print(f'{os.path.abspath(os.path.dirname(sys.argv[0]))=}')
-print()
-print(f'{os.environ.get("PYTHONSAFEPATH")=}')
-try:
-    print(f'{sys.flags.safe_path=}')
-except AttributeError:
-    print('sys.flags does not have safe_path')
-print()
-print('sys.path:')
-for p in sys.path:
-    print('  -', p)
+import inspect, os, sys, sysconfig
+
+data = {
+    'sys': {
+        'argv': sys.argv,
+        'base_exec_prefix': sys.base_exec_prefix,
+        'exec_prefix': sys.exec_prefix,
+        'executable': sys.executable,
+
+        # XXX: sys.flags is a bespoke namedtuple clone without
+        # _asdict() or _fields(), so resort to __match_args__.
+        'flags': dict(zip(sys.flags.__match_args__, sys.flags)),
+
+        'hexversion': sys.hexversion,
+        'orig_argv': sys.orig_argv,
+        'path': sys.path,
+        'platform': sys.platform,
+        'platlibdir': sys.platlibdir,
+        'prefix': sys.prefix,
+        'version': sys.version,
+    },
+
+    'os': {
+        os.environ[name] for name in os.environ if name.startswith('PYTHON')
+    },
+
+    'argv0': sys.argv[0],
+    'argv0_abspath': os.path.abspath(sys.argv[0]),
+    'argv0_dir_abspath': os.path.abspath(os.path.dirname(sys.argv[0])),
+
+    'orig_argv0': sys.orig_argv[0],
+    'orig_argv0_abspath': os.path.abspath(sys.orig_argv[0]),
+    'orig_argv0_dir_abspath': os.path.abspath(os.path.dirname(sys.orig_argv[0])),
+
+    'path0': sys.path[0],
+    'path0_abspath': os.path.abspath(sys.path[0]),
+
+    'executable_filename': inspect.stack()[-1][0].f_code.co_filename,
+    'current_working_directory': os.getcwd(),
+    'sysconfig_paths': sysconfig.get_paths(),
+}
+
+import json
+print(json.dumps(data, indent=2, default=print))
 """
 
     def test_sys_path_dump_python(self) -> None:
