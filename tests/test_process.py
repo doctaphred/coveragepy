@@ -867,6 +867,19 @@ print(json.dumps(data, indent=2, default=print))
         dump = self.run_command("coverage run run_me.py")
         assert dump == ""  # XXX: Print the data dump in the build output.
 
+    def test_sys_path_dump_coverage_safepath_platlibdir(self) -> None:
+        self.make_file("run_me.py", self.DATA_DUMP_SCRIPT)
+        self.set_environ("PYTHONSAFEPATH", "1")
+        self.set_environ("PYTHONPLATLIBDIR", "lib")
+        dump = self.run_command("coverage run run_me.py")
+        assert dump == ""  # XXX: Print the data dump in the build output.
+
+    def test_sys_path_dump_coverage_platlibdir(self) -> None:
+        self.make_file("run_me.py", self.DATA_DUMP_SCRIPT)
+        self.set_environ("PYTHONPLATLIBDIR", "lib")
+        dump = self.run_command("coverage run run_me.py")
+        assert dump == ""  # XXX: Print the data dump in the build output.
+
 ########################################################################
 
     @pytest.mark.skipif(env.PYVERSION < (3, 11), reason="PYTHONSAFEPATH is new in 3.11")
